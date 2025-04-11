@@ -1,0 +1,158 @@
+# almost fully functioning multiverse, using SKBee addon only
+#to create a world: /worlds create "name" "normal, void, flat"
+#to delete: /worlds delete "name" --c (for confirmation)
+#to tp: /worlds tp "name"
+#has a mostly not working plot system
+on player world change:
+    if event-world contains "plot":
+        send "On plot %event-world%" to player
+        make player execute command "/worldborder set 64 0"
+        make player execute command "/worldborder center 0 0"
+on block break:
+    set {_s} to the first 4 characters of "%player's world%"
+    if {_s} is "plot":
+        if "%player's world%" is not "plot/%player%":
+            cancel event
+            send "&cYou cannot break this here D:" to player
+on block place:
+    set {_s} to the first 4 characters of "%player's world%"
+    if {_s} is "plot":
+        if "%player's world%" is not "plot/%player%":
+            cancel event
+            send "&cYou cannot place this here D:" to player
+every minute:
+    command "/unloadplots"
+command /unloadplots:
+    trigger:
+        loop all worlds:
+            if chunk 0, 0 in world loop-world is loaded:
+                if loop-world contains "plot":
+                    unload loop-world
+                    send "&fUnloaded world &e%loop-world%"
+command /worlds <text> [<text>] [<text>] [<text>]:
+    trigger:
+        if arg-1 is "list":
+            send "&fWorlds:"
+            loop all worlds:
+                send "&8- &e%loop-world%"
+        if arg-1 is "tp":
+            if arg-2 is set:
+                if all worlds contains arg 2:
+                    send "&fTeleporting to world &e%arg 2%"
+                    teleport the player to the arg 2's spawn
+                else:
+                    send "&cPlease specify a valid world"
+            else:
+                send "&cPlease specify a valid world"
+        if arg-1 is "delete":
+            if arg-2 is set:
+                if all worlds contains arg 2:
+                    if arg-3 is "--c":
+                        send "&fDeleted world &e%arg 2%"
+                        delete world file for arg 2
+                    else:
+                        send "&fAre you sure you want to delete world &e%arg 2%&f? Type &e/worlds delete %arg 2% --c&f to confirm"
+                else:
+                    send "&cPlease specify a valid world"
+            else:
+                send "&cPlease specify a valid world"
+        if arg-1 is "create":
+            if arg-2 is set:
+                if arg-3 is set:
+                    set {_w} to new world creator named arg 2
+                    if arg 3 is "flat":
+                        set world type option of {_w} to flat
+                        set should generate structures option of {_w} to false
+                    if arg 3 is "void":
+                        set world type option of {_w} to flat
+                        set generator settings option of {_w} to "{""biome"": ""minecraft:plains"",""layers"": []}}"
+                        set should generate structures option of {_w} to false
+                    if arg 3 is "custom":
+                        set world type option of {_w} to flat
+                        set generator settings option of {_w} to arg 4 otherwise "{""biome"": ""minecraft:plains"",""layers"": []}}"
+                        set should generate structures option of {_w} to false
+                    load world from creator {_w}
+                    teleport player to {_w}'s spawn
+                    send "&fSuccessfully created world &e%arg 2%"
+                else:
+                    send "&cPlease specify what type of world to make (normal, flat, void)"
+            else:
+                send "&cPlease specify a world name"
+                  
+
+on tab complete of "/worlds":
+    set tab completions for position 1 to "create", "delete", "tp", "list", "load", and "unload"
+    set tab completions for position 2 to all worlds
+command /killentities [<text>]:
+    trigger:
+        if arg-1 is "!player":
+            loop all entities in player's world:
+                if loop-entity is not player:
+                    kill loop-entity
+        else:
+            kill all entities in player's world
+command /visit <text>:
+    trigger:
+        if world "plot/%arg 1%" is a world:
+            send "&fVisiting &e%arg 1%&f..."
+            teleport the player to "plot/%arg 1%"'s spawn
+        else:
+            send "&e%arg 1%&f does not have a plot!"
+on tab complete of "/visit":
+    set tab completions for position 1 to all players
+on tab complete of "/plot":
+    set tab completions for position 1 to "home", "tp", "visit", "invite", "kick", and "settings"
+    if tab arg-1 = "visit", "tp", "invite", or "kick":
+        set tab completions for position 2 to all players
+command /plot [<text>] [<player>]:
+    aliases: /p
+    trigger:
+        if arg 1 is set:
+            if arg 1 is "home":
+                make player execute command "/plot"
+            if arg 1 is "tp":
+                if arg 1 is set:
+                    make player execute command "/visit %arg 2%"
+                else:
+                    make player execute command "/plot"
+            if arg 1 is "visit":
+                make player execute command "/visit %arg 2%"
+            if arg 1 is "invite":
+                if arg 2 is online:
+                    send "&fInviting &e%arg 2%&f to your plot"
+                    send "<command:/visit %player%>&e%player%&f is inviting you to their plot! Click this message to teleport."
+                else:
+                    send "&e%arg 2% &cdoes not have a plot."
+            if arg 1 is "settings":
+                send "&cPlot settings are being developed."
+                stop 
+                set {_menu} to a new chest inventory with 3 rows named "Plot Settings"
+                set slot 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, and 26 of {_menu} to gray stained glass pane named " "
+                set slot 10 of {_menu} to bedrock block named "&fPrivate" with lore "", "&7Click to allow/disallow players to visit:", and onoff({plot::private::%uuid of player%})
+                open {_menu} to player
+            if arg 1 is "kick":
+                if arg 2's world is "plot/%player%":
+                    make arg 2 execute command "/warp spawn"
+                    send "&cYou were kicked from &e%player%&c's plot" to arg 2
+                    send "&fKicked &e%arg 2% &ffrom your plot!"
+                else:
+                    send "&e%arg 2% is not on your plot!"
+        else:
+            if world "plot/%player%" is a world:
+                make player execute command "/worlds tp plot/%player%"
+                send "&fTeleporting to your plot..."
+            else:
+                command "/worlds create plot/%player% flat"
+                send "&fYour plot is being created. You will be teleported once it is created"
+                loop 10 times:
+                    wait 30 seconds
+                    if world "plot/%player%" is a world:
+                        make player execute command "/plot"
+                        stop
+on inventory click:
+    if name of event-inventory contains "Plot Settings":
+        cancel event
+        set {_i} to index of event-slot
+        if {_i} is 10:
+            set {plot::private::%uuid of player%} to (-1 * {plot::private::%uuid of player%}) + 1
+        make player execute command "/plot settings"
