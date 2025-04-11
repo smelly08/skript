@@ -1,0 +1,176 @@
+options:
+    chatcolorguiname: "&9&lC&b&lH&a&lA&e&lT&6&lC&c&lO&4&lL&5&lO&d&lR"
+    dmsg: "Hello World!"
+on chat:
+    cancel event
+    broadcast colored chatmsg(player, message)
+    loop {btext::*}:
+        if message contains loop-value:
+            cancel event
+            send "&cMessage could not be sent (contains filtered word)"
+            stop
+            
+	
+command /tc [<string>]:
+    trigger:
+        #set {_message} to chatmsg("toosmelly" parsed as offlineplayer, arg 1)
+        #broadcast colored {_message}
+        broadcast colored "&8&l[&2&lOWNER&8&l] &a&ltoosmelly &8» &f%colored arg 1%"
+        
+on join:
+    set join message to "&8&l[&a&l+&8&l] %player's prefix% %player%"
+    if {joined::%uuid of player%} is not set:
+        broadcast "&9&l%player% has joined for the first time! (#%size of all offline players%)"
+        set {joined::%uuid of player%} to 1
+    stop
+on quit:
+    set quit message to "&8&l[&c&l-&8&l] %player's prefix% %player%"
+    stop
+command /nickname [<text>]:
+    aliases: /nick
+    trigger:
+        if arg-1 is set:
+            set {nickname::%uuid of player%} to arg 1
+            send colored "&aSet nickname to %{nickname::%uuid of player%}%"
+        else:
+            set {nickname::%uuid of player%} to "%player%"
+            send colored "&aRemoved nickname"
+command /clearallchat:
+    trigger:
+        loop 100 times:
+            broadcast " "
+        send "%player's prefix% %player% &r&fcleared the chat"
+command /clearchat:
+    trigger:
+        loop 100 times:
+            send " " to player
+        send "&fYour chat has been cleared!" to player
+command /chatcolor:
+    trigger:
+        set {_menu} to a new chest inventory with 6 rows named {@chatcolorguiname}
+        set slot 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, and 53 of {_menu} to gray stained glass pane named " "
+        set slot 10 of {_menu} to redstone block named "&4&lDARK RED" with lore "", "&7This will look like:", and cchatmsg(player, {@dmsg}, "4", {chatformat::%uuid of {_p}%})
+        set slot 11 of {_menu} to red dye named "&c&lRED" with lore "", "&7This will look like:", and cchatmsg(player, {@dmsg}, "c", {chatformat::%uuid of {_p}%})
+        set slot 12 of {_menu} to orange dye named "&6&lORANGE" with lore "", "&7This will look like:", and cchatmsg(player, {@dmsg}, "6", {chatformat::%uuid of {_p}%})
+        set slot 13 of {_menu} to yellow dye named "&e&lYELLOW" with lore "", "&7This will look like:", and cchatmsg(player, {@dmsg}, "e", {chatformat::%uuid of {_p}%})
+        set slot 14 of {_menu} to lime dye named "&a&lLIME" with lore "", "&7This will look like:", and cchatmsg(player, {@dmsg}, "a", {chatformat::%uuid of {_p}%})
+        set slot 15 of {_menu} to green dye named "&2&lGREEN" with lore "", "&7This will look like:", and cchatmsg(player, {@dmsg}, "2", {chatformat::%uuid of {_p}%})
+        set slot 16 of {_menu} to cyan dye named "&3&lCYAN" with lore "", "&7This will look like:", and cchatmsg(player, {@dmsg}, "3", {chatformat::%uuid of {_p}%})
+        set slot 19 of {_menu} to light blue dye named "&b&lLIGHT BLUE" with lore "", "&7This will look like:", and cchatmsg(player, {@dmsg}, "b", {chatformat::%uuid of {_p}%})
+        set slot 20 of {_menu} to blue dye named "&9&lBLUE" with lore "", "&7This will look like:", and cchatmsg(player, {@dmsg}, "9", {chatformat::%uuid of {_p}%})
+        set slot 21 of {_menu} to lapis block named "&1&lDARK BLUE" with lore "", "&7This will look like:", and cchatmsg(player, {@dmsg}, "1", {chatformat::%uuid of {_p}%})
+        set slot 22 of {_menu} to purple dye named "&5&lPURPLE" with lore "", "&7This will look like:", and cchatmsg(player, {@dmsg}, "5", {chatformat::%uuid of {_p}%})
+        set slot 23 of {_menu} to magenta dye named "&d&lMAGENTA" with lore "", "&7This will look like:", and cchatmsg(player, {@dmsg}, "d", {chatformat::%uuid of {_p}%})
+        set slot 24 of {_menu} to white dye named "&f&lWHITE" with lore "", "&7This will look like:", and cchatmsg(player, {@dmsg}, "f", {chatformat::%uuid of {_p}%})
+        set slot 25 of {_menu} to light gray dye named "&7&lLIGHT GRAY" with lore "", "&7This will look like:", and cchatmsg(player, {@dmsg}, "7", {chatformat::%uuid of {_p}%})
+        set slot 30 of {_menu} to gray dye named "&8&lGRAY" with lore "", "&7This will look like:", and cchatmsg(player, {@dmsg}, "8", {chatformat::%uuid of {_p}%})
+        set slot 31 of {_menu} to black dye named "&0&lBLACK" with lore "", "&7This will look like:", and cchatmsg(player, {@dmsg}, "0", {chatformat::%uuid of {_p}%})
+        set slot 32 of {_menu} to barrier named "&c&lOFF" with lore "&7Click to turn off your chatcolor!", "&7This will look like:", and rchatmsg(player, {@dmsg})
+        set slot 47 of {_menu} to gold ingot named "&f&l&mSTRIKETHROUGH" with lore "" and onoff({strikethrough::%uuid of player%})
+        set slot 48 of {_menu} to iron block named "&f&lBOLD" with lore "" and onoff({bold::%uuid of player%})
+        set slot 49 of {_menu} to emerald block named "&a&lEXAMPLE" with lore chatmsg(player, {@dmsg})
+        set slot 50 of {_menu} to red carpet named "&f&l&nUNDERLINED" with lore "" and onoff({underline::%uuid of player%})
+        set slot 51 of {_menu} to arrow named "&f&l&oITALIC" with lore "" and onoff({italic::%uuid of player%})
+        open {_menu} to player
+on inventory click:
+    if name of event-inventory is {@chatcolorguiname}:
+        cancel event
+        set {_i} to index of event-slot
+        set {_c} to {chatcolor::%uuid of player%}
+        if {_i} is 10:
+            set {_c} to "4"
+        if {_i} is 11:
+            set {_c} to "c"
+        if {_i} is 12:
+            set {_c} to "6"
+        if {_i} is 13:
+            set {_c} to "e"
+        if {_i} is 14:
+            set {_c} to "a"
+        if {_i} is 15:
+            set {_c} to "2"
+        if {_i} is 16:
+            set {_c} to "3"
+        if {_i} is 19:
+            set {_c} to "b"
+        if {_i} is 20:
+            set {_c} to "9"
+        if {_i} is 21:
+            set {_c} to "1"
+        if {_i} is 22:
+            set {_c} to "5"
+        if {_i} is 23:
+            set {_c} to "d"
+        if {_i} is 24:
+            set {_c} to "f"
+        if {_i} is 25:
+            set {_c} to "7"
+        if {_i} is 30:
+            set {_c} to "8"
+        if {_i} is 31:
+            set {_c} to "0"
+        if {_i} is 32:
+            set {_c} to "f"
+            set {strikethrough::%uuid of player%} to 0
+            set {bold::%uuid of player%} to 0
+            set {underline::%uuid of player%} to 0
+            set {italic::%uuid of player%} to 0
+        set {chatcolor::%uuid of player%} to {_c}
+        set {chatformat::%uuid of player%} to ""
+        if {_i} is 47:
+            set {strikethrough::%uuid of player%} to (-1 * {strikethrough::%uuid of player%}) + 1
+        if {_i} is 48:
+            set {bold::%uuid of player%} to (-1 * {bold::%uuid of player%}) + 1
+        if {_i} is 50:
+            set {underline::%uuid of player%} to (-1 * {underline::%uuid of player%}) + 1
+        if {_i} is 51:
+            set {italic::%uuid of player%} to (-1 * {italic::%uuid of player%}) + 1
+        if {bold::%uuid of player%} is 1:
+            set {chatformat::%uuid of player%} to join "%{chatformat::%uuid of player%}%&" and "l"
+        if {strikethrough::%uuid of player%} is 1:
+            set {chatformat::%uuid of player%} to join "%{chatformat::%uuid of player%}%&" and "m"
+        if {underline::%uuid of player%} is 1:
+            set {chatformat::%uuid of player%} to join "%{chatformat::%uuid of player%}%&" and "n"
+        if {italic::%uuid of player%} is 1:
+            set {chatformat::%uuid of player%} to join "%{chatformat::%uuid of player%}%&" and "o"
+        make player execute command "/chatcolor"
+command /discord:
+    aliases: dc
+    trigger:
+        send "<link:https://discord.gg/discord link here>&9&lClick to join the discord server!"
+command /playerlist:
+    trigger:
+        send "&fOnline Players:"
+        loop all players:
+            send "%loop-player's prefix% %loop-player%"
+            
+function chatmsg(p: object, t: text) :: text:
+    return cchatmsg({_p}, {_t}, {chatcolor::%uuid of {_p}%}, {chatformat::%uuid of {_p}%})
+            
+function rchatmsg(p: object, t: text) :: text:
+    return cchatmsg({_p}, {_t}, "f", "")
+
+function cchatmsg(p: object, t: text, c: text, f: text) :: text:
+    set {_n} to {nickname::%uuid of {_p}%} otherwise "%{_p}%"
+    if {tag::%uuid of {_p}%} is set:
+        set {_tag} to "%{tag::%uuid of {_p}%}% "
+    else:
+        set {_tag} to ""
+    set {_f} to {chatformat::%uuid of {_p}%} otherwise ""
+    return colored "%{_p}'s prefix% %{_n}% %{_tag}%&8» &%{_c} otherwise "f"%%{_f} otherwise ""%%colored {_t}%"
+    
+function onoff(n: number) :: text:
+    if {_n} is 0:
+        return "&cOFF"
+    else:
+        return "&aON"
+command /filter <text> [<text>]:
+    trigger:
+        if arg 1 is "add":
+            add arg 2 to {btext::*}
+        if arg 1 is "remove":
+            remove arg 2 from {btext::*}
+        if arg 1 is "list":
+            send {btext::*}
+on tab complete of "/filter":
+    set tab completions for position 1 to "add", "remove", and "list"
